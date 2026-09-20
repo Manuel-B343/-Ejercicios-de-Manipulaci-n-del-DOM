@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ejercicios de Manipulación del DOM</title>
+
+  <style>
+    /* ---------- Variables ---------- */
+    :root {
+      --tinta: #1f2430;
+      --tinta-suave: #5b6272;
+      --superficie: #ffffff;
+      --borde: #d9dce3;
+      --acento: #2f5bea;
+      --acento-oscuro: #2246c0;
+      --peligro: #c23b3b;
+      --radio: 12px;
+    }
+
+    /* ---------- Base ---------- */
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 2rem 1rem 3rem;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: var(--tinta);
+      background-color: #eef1f7;          /* el Ejercicio 3 cambia este color */
+      transition: background-color 0.4s ease;
+      line-height: 1.5;
+    }
+
+    main {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      margin: 0 0 0.25rem;
+    }
+
+    .intro {
+      margin: 0 0 2rem;
+      color: var(--tinta);
+    }
+
+    /* Tarjeta de cada ejercicio */
+    section {
+      background: var(--superficie);
+      border: 1px solid var(--borde);
+      border-radius: var(--radio);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      font-size: 1.15rem;
+      margin: 0 0 1rem;
+    }
+
+    /* ---------- Botones ---------- */
+    button {
+      font: inherit;
+      font-weight: 600;
+      padding: 0.6rem 1.1rem;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: var(--acento);
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.15s ease, transform 0.1s ease;
+    }
+
+    button:hover { background: var(--acento-oscuro); }
+    button:active { transform: scale(0.97); }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid #f5b400;
+      outline-offset: 2px;
+    }
+
+    button.secundario {
+      background: transparent;
+      color: var(--tinta);
+      border-color: var(--borde);
+    }
+    button.secundario:hover { background: #f1f2f6; }
+
+    #numero {
+      font-size: 4rem;
+      font-weight: 700;
+      text-align: center;
+      margin: 0 0 1rem;
+      font-variant-numeric: tabular-nums;
+    }
+    #numero.negativo { color: var(--peligro); }
+
+    .botones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      justify-content: center;
+    }
+
+    form {
+      display: grid;
+      gap: 1rem;
+    }
+
+    label {
+      display: grid;
+      gap: 0.3rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    input {
+      font: inherit;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--borde);
+      border-radius: 8px;
+    }
+
+    form button { justify-self: start; }
+
+    #resultado {
+      margin: 1rem 0 0;
+      padding: 0.75rem 1rem;
+      background: #f1f4ff;
+      border-left: 4px solid var(--acento);
+      border-radius: 4px;
+    }
+    #resultado:empty { display: none; }
+
+    #codigo-color {
+      margin: 1rem 0 0;
+      color: var(--tinta-suave);
+      font-family: ui-monospace, Consolas, monospace;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>Ejercicios de Manipulación del DOM</h1>
+    <p class="intro">Tres ejercicios interactivos con JavaScript: contador, formulario sin recarga y cambio de color de fondo.</p>
+
+    <section aria-labelledby="titulo-1">
+      <h2 id="titulo-1">Ejercicio 1: Contador</h2>
+      <p id="numero" aria-live="polite">0</p>
+      <div class="botones">
+        <button id="btn-incrementar" type="button">Incrementar</button>
+        <button id="btn-decrementar" type="button">Decrementar</button>
+        <button id="btn-reiniciar" type="button" class="secundario">Reiniciar</button>
+      </div>
+    </section>
+
+    <section aria-labelledby="titulo-2">
+      <h2 id="titulo-2">Ejercicio 2: Formulario sin recarga</h2>
+      <form id="formulario">
+        <label>
+          Nombre
+          <input type="text" id="nombre" name="nombre" autocomplete="name" required>
+        </label>
+        <label>
+          Email
+          <input type="email" id="email" name="email" autocomplete="email" required>
+        </label>
+        <button type="submit">Enviar</button>
+      </form>
+      <p id="resultado" aria-live="polite"></p>
+    </section>
+
+    <section aria-labelledby="titulo-3">
+      <h2 id="titulo-3">Ejercicio 3: Cambiar color de fondo</h2>
+      <button id="btn-color" type="button">Cambiar color de fondo</button>
+      <p id="codigo-color">Color actual: #eef1f7</p>
+    </section>
+  </main>
+
+  <script>
+    /* ============ Ejercicio 1: Contador ============ */
+    const numero = document.getElementById("numero");
+    let contador = 0;
+
+    function actualizarContador() {
+      numero.textContent = contador;
+      // El número se pone rojo cuando es negativo
+      numero.classList.toggle("negativo", contador < 0);
+    }
+
+    document.getElementById("btn-incrementar").addEventListener("click", () => {
+      contador++;
+      actualizarContador();
+    });
+
+    document.getElementById("btn-decrementar").addEventListener("click", () => {
+      contador--;
+      actualizarContador();
+    });
+
+    document.getElementById("btn-reiniciar").addEventListener("click", () => {
+      contador = 0;
+      actualizarContador();
+    });
+
+    /* ============ Ejercicio 2: Formulario sin recarga ============ */
+    const formulario = document.getElementById("formulario");
+    const resultado = document.getElementById("resultado");
+
+    formulario.addEventListener("submit", (event) => {
+      event.preventDefault(); // evita que la página se recargue
+
+      const nombre = document.getElementById("nombre").value.trim();
+      const email = document.getElementById("email").value.trim();
+
+      // textContent (y no innerHTML) para mostrar el texto tal cual, de forma segura
+      resultado.textContent = `Nombre: ${nombre} | Email: ${email}`;
+
+      formulario.reset();
+    });
+
+    /* ============ Ejercicio 3: Color de fondo aleatorio ============ */
+    const codigoColor = document.getElementById("codigo-color");
+
+    function colorAleatorio() {
+      // Número aleatorio entre 0 y 0xFFFFFF convertido a hexadecimal de 6 dígitos
+      const numeroHex = Math.floor(Math.random() * 0x1000000);
+      return "#" + numeroHex.toString(16).padStart(6, "0");
+    }
+
+    document.getElementById("btn-color").addEventListener("click", () => {
+      const color = colorAleatorio();
+      document.body.style.backgroundColor = color;
+      codigoColor.textContent = `Color actual: ${color}`;
+    });
+  </script>
+</body>
+</html>
